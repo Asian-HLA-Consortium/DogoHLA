@@ -1,0 +1,21 @@
+DogoHLA project meeting, 17 November 2026
+Preparation sheet (not a script; the slides carry the argument). About 15 minutes, 13 slides + 1 backup.
+
+1. Start from the gap: 134 of 1,056 gene copies in real Asian donors and 162 of 975 in Arab/Saudi donors are
+   not in IPD. Standard typing rebuilds none of them.
+2. Say once what "rebuilt exactly" means: the whole gene body, letter by letter. "Four-field name" = full
+   allele name down to non-coding differences.
+3. Step 1 sets the mood: the protein is almost always right (98%); the misses are 1 to 2 non-coding letters.
+4. Step 2 is the new result (finished today). Main check passed: 12 to 18 of 134. Mention the two caveats
+   yourself: one donor rerun with more memory (strict reading 12 to 17), four builder runs retried.
+5. Step 3: the x-axis is people in the panel, not haplotypes (each person gives two). Single steps are noisy;
+   the 5-to-40 rise is the firm part. The South Asian "40" panel has 35 people.
+6. Step 4: the builder adds on top of the panel. Be open about the weakness: on real reads 14 of 18 new
+   DRB1 calls are close but not exact.
+7. Step 5 was run on 20 development donors only. No frozen test. Good read placement, no working typer.
+8. Step 6: the loss with few reads is ties (about half of the calls at 1/16). Panel and population
+   frequencies do not fix it.
+9. Bottom line: 0 to 45 of 134 on real Asian reads. Normal typing 865 of 914 versus 861 (standard typing on
+   the re-pulled reads alone reaches 868, so the best setup is level, not better, on known alleles).
+10. If asked "why 0 for standard typing": 23 of the 134 copies differ from IPD only at the ends, and standard
+    typing gets those gene bodies right; they are not counted as rebuilt (backup slide).

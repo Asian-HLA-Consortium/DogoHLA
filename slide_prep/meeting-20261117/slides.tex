@@ -1,0 +1,319 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+% DogoHLA project meeting, 2026-11-17. Look follows hackathon-wrapup/slides.tex.
+% Every number is taken from scientist/evidence/<stage>/REPORT.md (see comments per slide).
+\usepackage{tikz,graphicx,booktabs,pgfplots,pgfplotstable}
+\pgfplotsset{compat=1.17}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+\definecolor{ink}{HTML}{202A30}
+\definecolor{muted}{HTML}{606970}
+\definecolor{accent}{HTML}{245F85}
+\definecolor{base}{HTML}{A9B3BA}
+\definecolor{warm}{HTML}{C77838}
+\setbeamercolor{background canvas}{bg=white}
+% \txt{x}{y}{width cm}{colour}{font size pt}{text}
+\newcommand{\txt}[5]{\node[anchor=north west,align=flush left,text=#4,text width=#3 cm,inner sep=0pt,font=\fontsize{#5pt}{1.28\dimexpr#5pt\relax}\selectfont] at (#1,#2)}
+\newcommand{\ttl}[1]{\txt{.55}{8.55}{14.9}{ink}{20}{#1};}
+\newcommand{\sub}[1]{\txt{.55}{7.72}{14.9}{muted}{11.5}{#1};}
+\newcommand{\foot}[1]{\node[anchor=north west,text=muted,text width=14.9cm,inner sep=0pt,font=\fontsize{6.5pt}{8pt}\selectfont] at (.55,.36) {DogoHLA project meeting, 17 November 2026\hfill HLA typing with population haplotypes\qquad #1};}
+% horizontal bar: \barh{x0}{y}{length cm}{colour}{value label}
+\newcommand{\barh}[5]{\fill[#4] (#1,#2) rectangle ++(#3,.42);\node[anchor=west,text=ink,font=\fontsize{12pt}{14pt}\selectfont\bfseries] at ({#1+#3+.12},{#2+.21}) {#5};}
+\newcommand{\blab}[3]{\node[anchor=east,text=ink,align=right,font=\fontsize{10pt}{12pt}\selectfont] at (#1,{#2+.21}) {#3};}
+\newenvironment{canvas}{\begin{tikzpicture}[remember picture,overlay,x=1cm,y=1cm,shift={(current page.south west)}]}{\end{tikzpicture}}
+\pgfplotsset{deck/.style={width=9.8cm,height=4.7cm,axis lines=left,axis line style={black!45},
+ tick style={black!45},tick label style={font=\fontsize{9.5pt}{11pt}\selectfont,text=ink},
+ label style={font=\fontsize{9.5pt}{11pt}\selectfont,text=ink},clip=false,ymajorgrids,grid style={black!8},
+ yticklabel={\pgfmathprintnumber{\tick}\%}}}
+\tikzset{ser/.style={line width=1.6pt,mark=*,mark size=2pt},lab/.style={anchor=west,font=\fontsize{10pt}{12pt}\selectfont}}
+\newsavebox{\doseplot}\newsavebox{\thinplot}
+\begin{document}
+% Plots are typeset in boxes first so that they do not inherit node options from the slide canvas.
+% figures/dose_matched.dat: from dose-response-20261114/results/figure_ready_dose_response.tsv (metric absent_exact_any).
+\savebox{\doseplot}{%
+\begin{tikzpicture}
+\begin{axis}[deck,xmin=0,xmax=42,ymin=0,ymax=38,xtick={0,5,10,20,40},ytick={0,10,20,30},
+ xlabel={people in the panel (two haplotypes each)}]
+\addplot[accent,ser] table[x=n,y=SAS]{figures/dose_matched.dat};
+\addplot[warm,ser] table[x=n,y=ME]{figures/dose_matched.dat};
+\addplot[ink,ser] table[x=n,y=EAS]{figures/dose_matched.dat};
+\node[lab,text=accent] at (axis cs:41,32.9) {South Asian 32.9\%};
+\node[lab,text=warm] at (axis cs:41,11.6) {Middle East 9.3\% (simulated reads)};
+\node[lab,text=ink] at (axis cs:41,5.0) {East Asian 7.1\%};
+\end{axis}
+\end{tikzpicture}}
+% figures/thin_real.dat: thin-data-20261114/REPORT.md, real reads, arm A, first-listed rule.
+\savebox{\thinplot}{%
+\begin{tikzpicture}
+\begin{axis}[deck,xmin=-.2,xmax=4.2,ymin=0,ymax=105,xtick={0,1,2,3,4},xticklabels={all,1/2,1/4,1/8,1/16},
+ ytick={0,25,50,75,100},xlabel={share of reads kept}]
+\addplot[accent,ser] table[x=i,y=acc]{figures/thin_real.dat};
+\addplot[warm,ser] table[x=i,y=tie]{figures/thin_real.dat};
+\node[lab,text=accent] at (axis cs:4.1,74.9) {correct two-field names: 99.0 to 74.9\%};
+\node[lab,text=warm] at (axis cs:4.1,50.8) {ties: 0.8 to 51\%};
+\end{axis}
+\end{tikzpicture}}
+
+% ---------------------------------------------------------------- 1 title
+\begin{frame}[plain]
+\begin{canvas}
+\node[anchor=north west,inner sep=0] at (.35,7.6) {\includegraphics[width=5.2cm]{figures/dogohla-logo.png}};
+\txt{6.0}{7.55}{9.5}{ink}{21}{Typing HLA genes that the public database does not know};
+\txt{6.0}{5.35}{9.5}{muted}{12}{HLA typing of Asian, Arab and Saudi genomes with population haplotypes};
+\txt{6.0}{3.95}{9.5}{ink}{12}{Six steps since the confirmatory test: what we did, why, and what we found};
+\txt{6.0}{2.45}{9.5}{muted}{10.5}{Robert Hoehndorf, KAUST\\Project meeting, 17 November 2026};
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 2 where we stood
+% 134 of 1,056 (T-real) and 162 of 975 (T-sim): rescore-partial REPORT, mosaic-typer table.
+% Confirmatory 21/81 vs 0/81 (set A, 33 donors): rescore-partial REPORT, validation.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{IPD misses many Asian and Arab alleles}
+\sub{IPD is the public database of known HLA alleles. Standard typing can only name what is in it.}
+\txt{.55}{6.55}{7.0}{accent}{34}{134 of 1,056};
+\txt{.55}{5.25}{7.0}{ink}{11.5}{gene copies in 66 real Asian donors are not in IPD};
+\txt{8.3}{6.55}{7.2}{accent}{34}{162 of 975};
+\txt{8.3}{5.25}{7.2}{ink}{11.5}{gene copies in 61 Arab and Saudi donors are not in IPD (simulated reads)};
+\draw[black!15] (.55,4.15)--(15.45,4.15);
+\txt{.55}{3.85}{14.9}{ink}{12}{Confirmatory test, 33 donors: adding Asian haplotypes to the reference recovered 21 of 81 missing copies. Standard typing recovered 0.};
+\txt{.55}{2.45}{14.9}{ink}{12}{We were not happy yet. Can a few good haplotypes from a population help type many more people from it?};
+\txt{.55}{1.2}{14.9}{muted}{8.5}{Eight HLA genes, two copies per person. Haplotype: one assembled copy of the HLA region of one person.};
+\foot{2}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 3 route
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Six steps, each with its own question}
+\sub{Run on the KAUST cluster. Where it mattered, the test was fixed in writing before we looked at the results.}
+\node[anchor=north west,inner sep=0,text=ink,font=\fontsize{11.5pt}{19pt}\selectfont] at (.55,6.75) {\begin{tabular}{@{}rll@{}}
+1 & Partial credit & How wrong are the calls that are not fully right?\\
+2 & Re-pull reads & Why do real reads have a hole in the DRB1 gene?\\
+3 & Panel size & Does a bigger same-population panel help more?\\
+4 & Patch builder & Can we rebuild alleles that are in no database?\\
+5 & Graph & Does a haplotype graph type better?\\
+6 & Thin data & Do population haplotypes help when reads are few?\\
+\end{tabular}};
+\txt{.55}{2.05}{14.9}{muted}{9.5}{Panel: haplotypes from sequenced people, added to the typing reference. Typing tool throughout: T1K.\\Frozen tests: 66 real Asian donors and 61 Arab and Saudi donors with simulated reads, never pooled.};
+\foot{3}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 4 step 1
+% genomic arm set A: coding exact 517/526 = 98.3%; IPD-absent wrong bases gene body median 2 (genomic), 1 (asian panel).
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Step 1: most misses are tiny}
+\sub{We re-scored the confirmatory test with partial credit: how many DNA letters is each call away from the truth?}
+\txt{.55}{6.45}{7.0}{accent}{40}{98\%};
+\txt{.55}{4.95}{6.6}{ink}{12}{of gene copies have the protein-coding part exactly right};
+\txt{8.3}{6.45}{7.2}{accent}{40}{1 to 2};
+\txt{8.3}{4.95}{7.0}{ink}{12}{letters off, typically, for a copy that is missing from IPD. All in the non-coding part.};
+\draw[black!15] (.55,3.35)--(15.45,3.35);
+\txt{.55}{3.05}{14.9}{ink}{12}{The remaining problem is the full allele name, not the protein.};
+\txt{.55}{2.2}{14.9}{muted}{9.5}{Four-field name: the full allele name, down to differences in non-coding DNA.\\33 donors, real reads, full-gene reference: 517 of 526 copies coding-exact. Median 2 letters off with IPD only, 1 with the Asian panel.};
+\foot{4}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 5 step 2 cause
+% reads-repull REPORT part A/B: 10 of 20 dev donors with hole; coverage 1-3 vs 18-27; after fix 12-27;
+% rule 2 adds 86-594 pairs per dev donor; Step 2b P6: median 365 (78-782) per test donor.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Step 2: the DRB1 hole came from misplaced reads}
+\sub{In some DRB1 types (DRB1*07 and *09, the DR53 group), about 2,000 letters of intron 1 had almost no reads.}
+\fill[accent] (1.0,5.3) rectangle (3.3,5.8);
+\fill[base!40] (3.3,5.3) rectangle (5.0,5.8);
+\fill[accent] (5.0,5.3) rectangle (8.0,5.8);
+\draw[warm,line width=1pt,dashed] (3.3,5.2) rectangle (5.0,5.9);
+\node[anchor=west,text=ink,font=\fontsize{9.5pt}{11pt}\selectfont] at (5.3,4.9) {DRB1 gene, chromosome 6};
+\node[text=warm,font=\fontsize{9.5pt}{11pt}\selectfont] at (4.15,4.9) {no reads};
+\foreach \x/\y in {11.6/6.1,12.9/5.9,12.1/5.55,13.4/5.3,11.8/5.0,13.0/4.75}{\fill[warm] (\x,\y) rectangle ++(.75,.13);}
+\draw[->,warm,line width=1pt] (4.15,5.9) to[out=55,in=180] (8.6,6.3) to[out=0,in=175] (11.3,5.6);
+\node[text=muted,font=\fontsize{9pt}{11pt}\selectfont] at (8.7,6.55) {standard alignment};
+\node[text=ink,font=\fontsize{9.5pt}{11pt}\selectfont] at (12.9,6.55) {other chromosomes};
+\txt{.55}{4.35}{14.9}{ink}{12}{Cause: this stretch looks like a common repeat, so the standard alignment put these reads on other chromosomes. Pulling reads from the HLA region missed them.};
+\txt{.55}{3.1}{14.9}{ink}{12}{Fix: also pull read pairs from the whole genome that carry at least three 31-letter words found only in HLA genes. This adds a few hundred read pairs per person.};
+\txt{.55}{1.75}{14.9}{muted}{9}{20 development donors: 10 had the hole. Reads covering it: 1 to 3 before, 12 to 27 after (18 to 27 expected). Giving the typing tool all genome reads instead made DRB1 typing worse, so that was rejected.};
+\foot{5}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 6 step 2 test
+% Step 2b table: P1 12->18 of 134 (+4.5 pp, 1.4 to 8.2); P3 38->45; P2i 861->868, 844->852 of 914;
+% P6 blind regions DRB1 103->0; strict reading 12->17; 4 builder tasks retried.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Step 2: re-pulled reads pass the frozen test}
+\sub{66 real Asian donors, finished today. Whole genes rebuilt exactly, out of 134 copies missing from IPD.}
+\txt{.55}{6.45}{7}{ink}{11}{Builder, IPD only};
+\blab{2.55}{5.5}{old reads}\barh{2.7}{5.5}{1.2}{base}{12}
+\blab{2.55}{4.95}{new reads}\barh{2.7}{4.95}{1.8}{accent}{18}
+\txt{.55}{4.4}{7}{ink}{11}{Builder + Asian panel};
+\blab{2.55}{3.45}{old reads}\barh{2.7}{3.45}{3.8}{base}{38}
+\blab{2.55}{2.9}{new reads}\barh{2.7}{2.9}{4.5}{accent}{45}
+\draw[black!40] (2.7,4.85)--(2.7,6.02);\draw[black!40] (2.7,2.8)--(2.7,3.97);
+\txt{8.7}{6.45}{6.8}{ink}{12}{Main check passed: 12 to 18};
+\txt{8.7}{5.9}{6.8}{muted}{10}{+4.5 points, 95\% interval +1.4 to +8.2};
+\txt{8.7}{5.1}{6.8}{ink}{12}{DRB1 regions with no reads: 103 to 0};
+\txt{8.7}{4.3}{6.8}{ink}{12}{Normal typing is not harmed};
+\txt{8.7}{3.75}{6.8}{muted}{10}{Correct four-field names: 861 to 868 of 914; with the Asian panel 844 to 852};
+\txt{8.7}{2.6}{6.8}{ink}{12}{All gains are in DRB1, DR53 group};
+\txt{.55}{1.75}{14.9}{muted}{9}{The builder is explained under step 4. One donor needed a rerun with more memory; counting that donor as failed gives 12 to 17, still above 0. Four builder runs were retried after timeouts on slow nodes.};
+\foot{6}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 7 step 3
+% dose-response REPORT short-answer table; n = people (donors) drawn, each contributes two copies per gene.
+% Non-Asian n=40: ME 3.7%, EAS 0.0%, SAS 2.6%.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Step 3: a bigger matched panel recovers more}
+\sub{Share of copies missing from IPD that are recovered exactly, by number of same-population people in the panel.}
+\node[anchor=north west,inner sep=0] at (.45,6.8) {\usebox{\doseplot}};
+\txt{.55}{2.45}{3.2}{ink}{11.5}{IPD only: 0\%};
+\txt{4.2}{2.45}{4.6}{ink}{11.5}{Still rising at 40 people};
+\txt{9.6}{2.45}{5.9}{ink}{11.5}{40 non-Asian people: 0 to 3.7\%};
+\txt{.55}{1.6}{14.9}{muted}{8.5}{Typing with the panel only, no builder. Single steps are within noise; the rise from 5 to 40 is clear in all three groups. The South Asian panel at ``40'' has 35 people.};
+\foot{7}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 8 step 4
+% mosaic-allgenes REPORT, criteria table: c 0->22 of 162, 0->12 of 134; d 39->56, 31->38;
+% a: 1 novel call on an IPD-present copy (T-sim, same copy in both arms), 0 (T-real); e fails in one cell -> 5 of 6;
+% T-real DRB1 novel calls right/wrong with R4n: 4/14.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Step 4: the patch builder rebuilds unknown alleles}
+\sub{It takes the closest known allele and corrects it where the person's own reads disagree. Frozen test, all eight genes.}
+\fill[base] (.55,6.3) rectangle ++(.3,.22);\node[anchor=west,text=ink,font=\fontsize{9.5pt}{11pt}\selectfont] at (.95,6.41) {typing alone};
+\fill[accent] (3.3,6.3) rectangle ++(.3,.22);\node[anchor=west,text=ink,font=\fontsize{9.5pt}{11pt}\selectfont] at (3.7,6.41) {with builder};
+\txt{.55}{5.95}{9}{ink}{11}{Arab and Saudi, simulated reads (of 162)};
+\blab{2.55}{5.05}{IPD only}\barh{2.7}{5.05}{0.03}{base}{0}
+\barh{2.7}{4.6}{1.54}{accent}{22}
+\blab{2.55}{3.95}{Asian panel}\barh{2.7}{3.95}{2.73}{base}{39}
+\barh{2.7}{3.5}{3.92}{accent}{56}
+\txt{8.3}{5.95}{7}{ink}{11}{Real Asian reads (of 134)};
+\blab{10.3}{5.05}{IPD only}\barh{10.45}{5.05}{0.03}{base}{0}
+\barh{10.45}{4.6}{.84}{accent}{12}
+\blab{10.3}{3.95}{Asian panel}\barh{10.45}{3.95}{2.17}{base}{31}
+\barh{10.45}{3.5}{2.66}{accent}{38}
+\draw[black!40] (2.7,3.4)--(2.7,5.57);\draw[black!40] (10.45,3.4)--(10.45,5.57);
+\txt{.55}{2.95}{14.9}{ink}{12}{The builder adds to the panel. 5 of 6 pre-set criteria passed; 1 false new-allele call.};
+\txt{.55}{2.25}{14.9}{ink}{12}{Weakness: on real reads, 14 of 18 new DRB1 calls are close to the truth but not exact.};
+\txt{.55}{1.5}{14.9}{muted}{9}{Counts: whole gene bodies rebuilt exactly, among copies missing from IPD. Gene body: the gene from its first to its last coding letter. Old read sets, before the step 2 fix.};
+\foot{8}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 9 step 5
+% graph-paths REPORT: DRB1 98% sim / 96% real vs 41% / 52%; vg haplotypes DRB1 0 of 25. Development donors only.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Step 5: the graph places reads but does not type}
+\sub{A graph stores all known versions of a gene together. We tried to pick each person's two versions straight from it.}
+\txt{.55}{6.45}{7.0}{accent}{34}{96 to 98\%};
+\txt{.55}{5.15}{6.6}{ink}{12}{of DRB1 reads are placed exactly right on a clean graph (old graph: 41 to 52\%)};
+\txt{8.3}{6.45}{7.2}{warm}{34}{0 of 25};
+\txt{8.3}{5.15}{7.0}{ink}{12}{DRB1 copies missing from IPD are recovered by picking paths through the graph};
+\draw[black!15] (.55,3.55)--(15.45,3.55);
+\txt{.55}{3.25}{14.9}{ink}{12}{Path picking is not a typer. The builder stays our method for DRB1.};
+\txt{.55}{2.5}{14.9}{ink}{12}{The good read placement can still be used: as input for the builder.};
+\txt{.55}{1.5}{14.9}{muted}{9}{20 development donors only; no frozen test was run for the graph. Ranges cover real and simulated reads.};
+\foot{9}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 10 step 6
+% thin-data REPORT: real, arm A, first-listed rule, two-field 99.0/98.5/95.8/83.6/74.9; ambiguity 0.8/2.4/10.5/31.2/50.8;
+% B - A at 1/16 real -1.2 pp (-2.1,-0.2); prior PM - P0f real +0.3 (-0.1,0.7), ME +1.2 (0.3,2.1).
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Step 6: with few reads, ties are the problem}
+\sub{Real reads, thinned step by step. Two-field name: the name at protein level.}
+\node[anchor=north west,inner sep=0] at (.45,7.05) {\usebox{\thinplot}};
+\txt{.55}{2.65}{14.9}{ink}{11.5}{At 1/16 of the reads, neither fix helps: Asian panel $-1.2$ points, population frequencies $+0.3$ points.};
+\txt{.55}{1.55}{14.9}{muted}{8.5}{Tie: the tool cannot decide between several alleles and lists them all. Population frequencies: break ties by how common each allele is in the person's population. 86 real Asian donors. Simulated Arab and Saudi reads: $+1.2$ points.};
+\foot{10}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 11 bottom line
+% reads-repull Step 2b supervisor recount: body_recovered A 0, B 31, D4R4n 38 -> 45 of 134;
+% named4: A 861 (old reads) / 868 (new reads), B 852 (new reads), D4R4n 865 (new reads) of 914.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Best setup rebuilds 45 of 134 missing genes}
+\sub{Real Asian reads, 66 donors. Whole genes rebuilt exactly, out of 134 copies that are missing from IPD.}
+\blab{6.4}{6.1}{Standard typing (T1K + IPD)}\barh{6.55}{6.1}{0.03}{base}{0}
+\blab{6.4}{5.4}{+ Asian panel}\barh{6.55}{5.4}{2.48}{base}{31}
+\blab{6.4}{4.7}{+ Asian panel + builder}\barh{6.55}{4.7}{3.04}{base}{38}
+\blab{6.4}{4.0}{+ panel + builder + re-pulled reads}\barh{6.55}{4.0}{3.6}{accent}{45}
+\draw[black!40] (6.55,3.85)--(6.55,6.67);
+\txt{11.9}{6.35}{3.8}{accent}{30}{0 to 45};
+\txt{11.9}{5.2}{3.8}{ink}{11.5}{of 134: one in three};
+\draw[black!15] (.55,3.4)--(15.45,3.4);
+\txt{.55}{3.1}{14.9}{ink}{12}{Normal typing is not harmed: 865 of 914 correct four-field names with the best setup, 861 with standard typing.};
+\txt{.55}{1.85}{14.9}{muted}{9}{Standard typing on the re-pulled reads: 868 of 914. Panel alone: 852.};
+\foot{11}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 12 helps / does not
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{What helps and what does not}
+\txt{.55}{7.3}{7.0}{accent}{14}{Helps};
+\txt{.55}{6.55}{6.9}{ink}{12}{Haplotypes from the same population, and more of them};
+\txt{.55}{5.2}{6.9}{ink}{12}{The patch builder, on top of the panel};
+\txt{.55}{4.4}{6.9}{ink}{12}{Re-pulled reads, for DRB1 in DR53-group carriers};
+\txt{8.5}{7.3}{7.0}{warm}{14}{Does not help};
+\txt{8.5}{6.55}{6.9}{ink}{12}{Picking haplotype paths from a graph};
+\txt{8.5}{5.75}{6.9}{ink}{12}{Panel or population frequencies when reads are few};
+\draw[black!15] (8.0,3.4)--(8.0,7.3);
+\draw[black!15] (.55,3.0)--(15.45,3.0);
+\txt{.55}{2.7}{14.9}{ink}{12}{Still open: two of three missing copies are not rebuilt exactly, mostly DRB1. Most calls are only a few letters off.};
+\foot{12}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- 13 next steps
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Three proposals to decide today}
+\txt{.55}{7.1}{1.0}{accent}{26}{1};
+\txt{1.6}{7.0}{13.6}{ink}{13}{Add more matched genomes to the panel};
+\txt{1.6}{6.4}{13.6}{muted}{11}{The curve is still rising at 40 people. Which populations first, and where do the genomes come from?};
+\txt{.55}{5.2}{1.0}{accent}{26}{2};
+\txt{1.6}{5.1}{13.6}{ink}{13}{Fix the builder's near-miss DRB1 calls};
+\txt{1.6}{4.5}{13.6}{muted}{11}{On real reads most new DRB1 calls are close but not exact.};
+\txt{.55}{3.3}{1.0}{accent}{26}{3};
+\txt{1.6}{3.2}{13.6}{ink}{13}{Feed the builder with reads placed by the clean graph};
+\txt{1.6}{2.6}{13.6}{muted}{11}{The graph places reads correctly exactly where the builder is weakest.};
+\foot{13}
+\end{canvas}
+\end{frame}
+
+% ---------------------------------------------------------------- backup
+% 23 of 134: rescore-partial REPORT, "Mismatches left" item 4.
+\begin{frame}[plain]
+\begin{canvas}
+\ttl{Backup: how we counted}
+\node[anchor=north west,inner sep=0,text=ink,font=\fontsize{10.5pt}{16.5pt}\selectfont] at (.55,7.5) {\begin{tabular}{@{}p{3.3cm}p{11.2cm}@{}}
+Missing from IPD & The person's full allele sequence is not in the public database.\\
+Rebuilt exactly & The called gene body is identical to the truth, letter by letter, and comes from a panel haplotype or from the builder.\\
+Gene body & First to last coding letter, introns included. Sequence before and after the gene is not counted.\\
+Truth & The donors' assembled genomes.\\
+Step 3 measure & Stricter: the whole allele sequence must match, including the ends.\\
+\end{tabular}};
+\txt{.55}{3.2}{14.9}{ink}{10.5}{For 23 of the 134 real-read copies, the gene body itself is already an IPD allele; only the ends differ. Standard typing gets those gene bodies right. They are not counted as rebuilt.};
+\txt{.55}{1.9}{14.9}{muted}{9}{Arab and Saudi results use simulated reads. Steps 1, 3, 5 and 6 are exploratory: many comparisons, no correction.};
+\foot{14}
+\end{canvas}
+\end{frame}
+\end{document}
