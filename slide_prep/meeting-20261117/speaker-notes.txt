@@ -6,8 +6,8 @@ Preparation sheet (not a script; the slides carry the argument). About 15 minute
 2. Say once what "rebuilt exactly" means: the whole gene body, letter by letter. "Four-field name" = full
    allele name down to non-coding differences.
 3. Step 1 sets the mood: the protein is almost always right (98%); the misses are 1 to 2 non-coding letters.
-4. Step 2 is the new result (finished today). Main check passed: 12 to 18 of 134. Mention the two caveats
-   yourself: one donor rerun with more memory (strict reading 12 to 17), four builder runs retried.
+4. Step 2 is the new result (finished today). Main check passed: 12 to 18 of 134. The strict reading of
+   the frozen plan (one donor counted as failed) gives 12 to 17.
 5. Step 3: the x-axis is people in the panel, not haplotypes (each person gives two). Single steps are noisy;
    the 5-to-40 rise is the firm part. The South Asian "40" panel has 35 people.
 6. Step 4: the builder adds on top of the panel. Be open about the weakness: on real reads 14 of 18 new

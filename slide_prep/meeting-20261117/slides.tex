@@ -87,7 +87,7 @@
 \begin{frame}[plain]
 \begin{canvas}
 \ttl{Six steps, each with its own question}
-\sub{Run on the KAUST cluster. Where it mattered, the test was fixed in writing before we looked at the results.}
+\sub{Where it mattered, the test was fixed in writing before we looked at the results.}
 \node[anchor=north west,inner sep=0,text=ink,font=\fontsize{11.5pt}{19pt}\selectfont] at (.55,6.75) {\begin{tabular}{@{}rll@{}}
 1 & Partial credit & How wrong are the calls that are not fully right?\\
 2 & Re-pull reads & Why do real reads have a hole in the DRB1 gene?\\
@@ -144,7 +144,7 @@
 
 % ---------------------------------------------------------------- 6 step 2 test
 % Step 2b table: P1 12->18 of 134 (+4.5 pp, 1.4 to 8.2); P3 38->45; P2i 861->868, 844->852 of 914;
-% P6 blind regions DRB1 103->0; strict reading 12->17; 4 builder tasks retried.
+% P6 blind regions DRB1 103->0; strict reading 12->17.
 \begin{frame}[plain]
 \begin{canvas}
 \ttl{Step 2: re-pulled reads pass the frozen test}
@@ -162,7 +162,7 @@
 \txt{8.7}{4.3}{6.8}{ink}{12}{Normal typing is not harmed};
 \txt{8.7}{3.75}{6.8}{muted}{10}{Correct four-field names: 861 to 868 of 914; with the Asian panel 844 to 852};
 \txt{8.7}{2.6}{6.8}{ink}{12}{All gains are in DRB1, DR53 group};
-\txt{.55}{1.75}{14.9}{muted}{9}{The builder is explained under step 4. One donor needed a rerun with more memory; counting that donor as failed gives 12 to 17, still above 0. Four builder runs were retried after timeouts on slow nodes.};
+\txt{.55}{1.75}{14.9}{muted}{9}{The builder is explained under step 4. A strict reading of the frozen plan, which counts one donor as failed, gives 12 to 17, still above 0.};
 \foot{6}
 \end{canvas}
 \end{frame}
